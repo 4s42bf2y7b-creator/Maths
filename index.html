@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths Academy — Year 5</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f4f0; --white: #ffffff; --border: #e4e2db; --border2: #d0cec6;
+  --text: #181714; --soft: #5a5852; --muted: #9a9790;
+  --accent: #1a56db; --accent-bg: #eef2ff; --accent-dark: #1447c0;
+  --green: #15803d; --green-bg: #f0fdf4; --green-mid: #bbf7d0;
+  --red: #b91c1c; --red-bg: #fef2f2; --red-mid: #fecaca;
+  --amber: #b45309; --amber-bg: #fffbeb; --amber-mid: #fde68a;
+  --purple: #7c3aed; --purple-bg: #f5f3ff;
+  --teal: #0d766e; --teal-bg: #f0fdfa;
+  --rose: #be185d; --rose-bg: #fff1f2;
+  --shadow: 0 1px 2px rgba(0,0,0,.06),0 3px 12px rgba(0,0,0,.07);
+  --shadow-lg: 0 2px 6px rgba(0,0,0,.08),0 8px 28px rgba(0,0,0,.09);
+  --r: 12px; --r-sm: 8px;
+}
+html { font-size: 16px; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
+.app { max-width:540px; margin:0 auto; padding:20px 16px 56px; }
+.screen { display:none; }
+.screen.on { display:block; animation:up .2s ease; }
+@keyframes up { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
+h1,h2 { font-family:'Lora',serif; font-weight:700; }
+
+/* ── Shared ── */
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:10px 0 22px; }
+.logo { font-family:'Lora',serif; font-size:1.15rem; font-weight:700; letter-spacing:-.3px; }
+.logo em { color:var(--accent); font-style:normal; }
+.year-tag { font-size:.72rem; font-weight:600; background:var(--accent-bg); color:var(--accent); padding:4px 10px; border-radius:20px; }
+
+.section-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin-bottom:10px; }
+
+.card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:18px 20px; box-shadow:var(--shadow); }
+.card + .card { margin-top:10px; }
+
+.btn-pri { background:var(--accent); color:#fff; border:none; border-radius:var(--r-sm); padding:13px 18px; font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:600; cursor:pointer; transition:all .15s; }
+.btn-pri:hover { background:var(--accent-dark); transform:translateY(-1px); }
+.btn-sec { background:var(--white); color:var(--soft); border:1px solid var(--border); border-radius:var(--r-sm); padding:12px 18px; font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:500; cursor:pointer; transition:all .15s; }
+.btn-sec:hover { border-color:var(--text); color:var(--text); }
+.btn-full { width:100%; }
+
+.hr { height:1px; background:var(--border); margin:16px 0; }
+.gap8 { display:flex; flex-direction:column; gap:8px; }
+
+/* ── Nav tabs (bottom) ── */
+.nav-bar { position:fixed; bottom:0; left:0; right:0; background:var(--white); border-top:1px solid var(--border); display:flex; z-index:100; max-width:540px; margin:0 auto; }
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 4px 12px; cursor:pointer; border:none; background:none; font-family:'DM Sans',sans-serif; color:var(--muted); font-size:.65rem; font-weight:600; transition:color .15s; }
+.nav-item .ni { font-size:1.2rem; }
+.nav-item.active { color:var(--accent); }
+
+/* ── HOME ── */
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
+.stat { background:var(--white); border:1px solid var(--border); border-radius:var(--r-sm); padding:12px 10px; text-align:center; box-shadow:var(--shadow); }
+.stat-n { font-family:'Lora',serif; font-size:1.4rem; line-height:1; margin-bottom:3px; }
+.stat-l { font-size:.65rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+
+.challenge { position:relative; overflow:hidden; }
+.challenge::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--purple)); }
+.ch-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.ch-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); }
+.ch-status { font-size:.72rem; font-weight:700; background:var(--accent-bg); color:var(--accent); padding:3px 10px; border-radius:20px; }
+.ch-msg { font-size:.87rem; color:var(--soft); margin-bottom:11px; line-height:1.5; }
+.ch-msg strong { color:var(--text); }
+.track { height:5px; background:var(--bg); border-radius:3px; overflow:hidden; }
+.fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent),var(--purple)); transition:width .5s cubic-bezier(.4,0,.2,1); }
+
+/* Smart Reinforce banner */
+.reinforce-banner { background:linear-gradient(135deg,#fef3c7,#fff7ed); border:1px solid var(--amber-mid); border-radius:var(--r); padding:15px 18px; margin-bottom:14px; display:none; }
+.reinforce-banner.show { display:block; }
+.rb-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.rb-head .ri { font-size:1.3rem; }
+.rb-head strong { font-size:.9rem; color:#78350f; }
+.rb-desc { font-size:.82rem; color:#92400e; line-height:1.5; margin-bottom:11px; }
+.rb-topics { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:11px; }
+.rb-chip { font-size:.74rem; font-weight:600; background:#fef3c7; border:1px solid var(--amber-mid); border-radius:20px; padding:4px 11px; color:var(--amber); }
+
+
+
+/* Term tabs */
+.term-tabs { display:flex; gap:6px; margin-bottom:12px; }
+.term-tab { flex:1; background:var(--white); border:1.5px solid var(--border); border-radius:var(--r-sm); padding:8px 4px; font-size:.76rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all .15s; text-align:center; font-family:'DM Sans',sans-serif; }
+.term-tab:hover { border-color:var(--accent); color:var(--accent); }
+.term-tab.active { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+
+/* Topic list */
+.topics { display:flex; flex-direction:column; gap:7px; }
+.topic-row { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:13px 15px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all .15s; box-shadow:var(--shadow); width:100%; font-family:'DM Sans',sans-serif; color:var(--text); text-align:left; }
+.topic-row:hover { border-color:var(--accent); transform:translateY(-1px); box-shadow:var(--shadow-lg); }
+.topic-row.weak-highlight { border-color:var(--amber-mid); background:var(--amber-bg); }
+.topic-row.weak-highlight:hover { border-color:var(--amber); }
+.t-icon { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+.t-info { flex:1; min-width:0; }
+.t-name { font-size:.9rem; font-weight:600; margin-bottom:1px; }
+.t-sub { font-size:.72rem; color:var(--muted); }
+.t-right { text-align:right; flex-shrink:0; }
+.lvl-badge { font-size:.66rem; font-weight:700; padding:3px 9px; border-radius:20px; white-space:nowrap; }
+.t-acc { font-size:.68rem; margin-top:3px; font-weight:600; }
+.weak-flag { font-size:.65rem; background:var(--amber-bg); color:var(--amber); border-radius:20px; padding:2px 8px; font-weight:700; display:inline-block; margin-top:3px; }
+.strong-flag { font-size:.65rem; background:var(--green-bg); color:var(--green); border-radius:20px; padding:2px 8px; font-weight:700; display:inline-block; margin-top:3px; }
+
+/* ── PROGRESS SCREEN ── */
+.progress-header { margin-bottom:20px; }
+.progress-header h2 { font-family:'Lora',serif; font-size:1.3rem; margin-bottom:4px; }
+.progress-header p { font-size:.84rem; color:var(--soft); }
+
+.perf-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:18px; }
+.perf-tile { background:var(--white); border:1px solid var(--border); border-radius:var(--r-sm); padding:14px 13px; box-shadow:var(--shadow); }
+.perf-tile-n { font-family:'Lora',serif; font-size:1.5rem; display:block; margin-bottom:2px; }
+.perf-tile-l { font-size:.67rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+
+/* Strength/weakness breakdown */
+.sw-section { margin-bottom:18px; }
+.sw-title { font-size:.82rem; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+.sw-item { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.sw-label { font-size:.82rem; font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sw-bar-wrap { width:120px; height:7px; background:var(--border); border-radius:4px; overflow:hidden; flex-shrink:0; }
+.sw-bar { height:100%; border-radius:4px; transition:width .6s ease; }
+.sw-pct { font-family:'DM Mono',monospace; font-size:.72rem; color:var(--muted); width:34px; text-align:right; flex-shrink:0; }
+.sw-qs { font-size:.68rem; color:var(--muted); width:40px; text-align:right; flex-shrink:0; }
+
+.no-data-msg { text-align:center; padding:32px 20px; color:var(--muted); font-size:.88rem; }
+.no-data-msg .nd-icon { font-size:2.5rem; display:block; margin-bottom:10px; }
+
+/* Insight cards */
+.insight-card { border-radius:var(--r); padding:14px 16px; margin-bottom:8px; }
+.insight-card.needs-work { background:var(--red-bg); border:1px solid var(--red-mid); }
+.insight-card.going-well { background:var(--green-bg); border:1px solid var(--green-mid); }
+.insight-card h4 { font-size:.8rem; font-weight:700; margin-bottom:5px; }
+.insight-card.needs-work h4 { color:var(--red); }
+.insight-card.going-well h4 { color:var(--green); }
+.insight-card p { font-size:.82rem; line-height:1.5; color:var(--soft); }
+.insight-card p strong { color:var(--text); }
+
+/* ── QUESTION SCREEN ── */
+.q-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.back { display:flex; align-items:center; gap:4px; background:none; border:none; font-family:'DM Sans',sans-serif; font-size:.84rem; font-weight:500; color:var(--muted); cursor:pointer; padding:4px 0; transition:color .15s; }
+.back:hover { color:var(--text); }
+.q-pills { display:flex; gap:7px; align-items:center; }
+.timer { font-family:'DM Mono',monospace; font-size:.75rem; background:var(--white); border:1px solid var(--border); border-radius:20px; padding:5px 11px; color:var(--soft); }
+.timer.warn { border-color:var(--red-mid); color:var(--red); background:var(--red-bg); }
+.topic-pill2 { font-size:.71rem; font-weight:700; padding:5px 11px; border-radius:20px; }
+
+.dots { display:flex; gap:4px; margin-bottom:16px; }
+.dot { height:4px; flex:1; border-radius:2px; background:var(--border); }
+.dot.ok { background:var(--green); }
+.dot.bad { background:var(--red-mid); }
+.dot.cur { background:var(--accent); }
+
+.qcard { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:24px 20px 20px; box-shadow:var(--shadow-lg); margin-bottom:10px; }
+.qcard-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.diff { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; padding:4px 10px; border-radius:20px; }
+.diff.warm { background:var(--green-bg); color:var(--green); }
+.diff.med  { background:var(--amber-bg); color:var(--amber); }
+.diff.hard { background:var(--purple-bg); color:var(--purple); }
+.diff.ai   { background:#ede9fe; color:var(--purple); }
+.hint-btn { display:flex; align-items:center; gap:5px; background:none; border:1px solid var(--border); border-radius:20px; padding:5px 11px; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:500; color:var(--soft); cursor:pointer; transition:all .15s; }
+.hint-btn:hover { border-color:var(--amber); color:var(--amber); }
+.qnum { font-family:'DM Mono',monospace; font-size:.67rem; color:var(--muted); margin-bottom:5px; }
+.qtext { font-family:'Lora',serif; font-size:1.7rem; font-weight:700; line-height:1.3; margin-bottom:20px; letter-spacing:-.3px; white-space:pre-line; }
+
+.ans-in { width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:var(--r-sm); padding:13px 15px; font-family:'DM Mono',monospace; font-size:1.25rem; font-weight:500; color:var(--text); text-align:center; outline:none; transition:border-color .15s; }
+.ans-in:focus { border-color:var(--accent); background:var(--white); }
+.ans-in.ok  { border-color:var(--green); background:var(--green-bg); color:var(--green); }
+.ans-in.bad { border-color:var(--red); background:var(--red-bg); color:var(--red); }
+.check-btn { width:100%; margin-top:9px; background:var(--accent); color:#fff; border:none; border-radius:var(--r-sm); padding:13px; font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:600; cursor:pointer; transition:all .15s; }
+.check-btn:hover:not(:disabled) { background:var(--accent-dark); transform:translateY(-1px); }
+.check-btn:disabled { opacity:.45; cursor:default; transform:none; }
+
+.mc { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mc-btn { background:var(--bg); border:1.5px solid var(--border); border-radius:var(--r-sm); padding:14px 8px; font-family:'DM Mono',monospace; font-size:1.05rem; font-weight:500; color:var(--text); cursor:pointer; transition:all .15s; text-align:center; }
+.mc-btn:hover:not(:disabled) { border-color:var(--accent); background:var(--accent-bg); }
+.mc-btn.ok     { border-color:var(--green); background:var(--green-bg); color:var(--green); }
+.mc-btn.bad    { border-color:var(--red); background:var(--red-bg); color:var(--red); }
+.mc-btn.reveal { border-color:var(--green); background:var(--green-bg); color:var(--green); }
+.mc-btn:disabled { cursor:default; }
+
+.fb { display:flex; align-items:flex-start; gap:9px; border-radius:var(--r-sm); padding:11px 13px; margin-top:9px; font-size:.84rem; line-height:1.5; opacity:0; transform:translateY(4px); transition:all .2s; }
+.fb.on { opacity:1; transform:translateY(0); }
+.fb.ok  { background:var(--green-bg); color:#14532d; }
+.fb.bad { background:var(--red-bg); color:#7f1d1d; }
+.fb-ic { flex-shrink:0; font-size:1rem; margin-top:1px; }
+
+.hint-box { background:var(--amber-bg); border:1px solid var(--amber-mid); border-radius:var(--r-sm); padding:13px 15px; margin-top:9px; font-size:.83rem; line-height:1.7; color:#78350f; display:none; }
+.hint-box.on { display:block; }
+.hint-ttl { font-weight:700; font-size:.7rem; text-transform:uppercase; letter-spacing:.5px; color:var(--amber); margin-bottom:6px; }
+
+.next-btn { width:100%; margin-top:9px; background:var(--text); color:#fff; border:none; border-radius:var(--r-sm); padding:13px; font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:600; cursor:pointer; transition:all .15s; display:none; }
+.next-btn:hover { background:#2d2c29; transform:translateY(-1px); }
+
+/* AI loading */
+.ai-loading { text-align:center; padding:32px 20px; }
+.ai-loading .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 14px; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.ai-loading p { font-size:.88rem; color:var(--soft); }
+
+/* ── RESULTS ── */
+.ring-wrap { width:108px; height:108px; position:relative; margin:20px auto 16px; }
+.ring-wrap svg { transform:rotate(-90deg); }
+.ring-bg  { fill:none; stroke:var(--border); stroke-width:8; }
+.ring-arc { fill:none; stroke-width:8; stroke-linecap:round; stroke-dasharray:289; stroke-dashoffset:289; transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
+.ring-inner { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.ring-big { font-family:'Lora',serif; font-size:1.7rem; font-weight:700; line-height:1; display:block; }
+.ring-sm  { font-size:.67rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+.res-title { font-family:'Lora',serif; font-size:1.4rem; text-align:center; margin-bottom:4px; }
+.res-sub { text-align:center; font-size:.85rem; color:var(--soft); margin-bottom:16px; }
+.rec-banner { background:linear-gradient(135deg,#fef9c3,#fff7ed); border:1px solid var(--amber-mid); border-radius:var(--r); padding:13px 16px; display:none; align-items:center; gap:11px; margin-bottom:12px; }
+.rec-banner.on { display:flex; }
+.rec-banner .ri { font-size:1.4rem; }
+.rec-banner .rt { font-size:.84rem; line-height:1.5; color:#78350f; }
+.res-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:10px; }
+.rtile { background:var(--white); border:1px solid var(--border); border-radius:var(--r-sm); padding:12px 8px; text-align:center; box-shadow:var(--shadow); }
+.rtile-n { font-family:'Lora',serif; font-size:1.25rem; display:block; margin-bottom:2px; }
+.rtile-l { font-size:.63rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+.lvlup  { background:var(--green-bg); border:1px solid var(--green-mid); border-radius:var(--r-sm); padding:11px 14px; font-size:.84rem; font-weight:600; color:var(--green); margin-bottom:8px; display:none; }
+.lvlup.on { display:block; }
+
+/* Question breakdown in results */
+.q-breakdown { margin-bottom:12px; }
+.q-breakdown-title { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:8px; }
+.q-breakdown-list { display:flex; flex-direction:column; gap:5px; }
+.qb-item { display:flex; align-items:center; gap:8px; font-size:.8rem; padding:7px 10px; border-radius:var(--r-sm); }
+.qb-item.ok  { background:var(--green-bg); color:#166534; }
+.qb-item.bad { background:var(--red-bg); color:#991b1b; }
+.qb-icon { font-size:.9rem; flex-shrink:0; }
+.qb-text { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Confetti */
+.cp { position:fixed; width:7px; height:7px; pointer-events:none; z-index:9999; border-radius:1px; animation:cf var(--d,2s) ease-out forwards; }
+@keyframes cf { 0%{transform:translateY(-8px) rotate(0);opacity:1} 100%{transform:translateY(110vh) rotate(var(--r,500deg));opacity:0} }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════ HOME ═══════════ -->
+<div id="s-home" class="screen on">
+  <div class="topbar">
+    <div class="logo">Maths<em>.</em>Academy</div>
+    <div class="year-tag">Year 5</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="h-streak">0</div><div class="stat-l">🔥 Streak</div></div>
+    <div class="stat"><div class="stat-n" id="h-record">—</div><div class="stat-l">🏆 Record</div></div>
+    <div class="stat"><div class="stat-n" id="h-stars">0</div><div class="stat-l">⭐ Stars</div></div>
+  </div>
+
+  <div class="card challenge" style="margin-bottom:12px">
+    <div class="ch-head">
+      <span class="ch-label">Today's Challenge</span>
+      <span class="ch-status" id="ch-status">Not started</span>
+    </div>
+    <div class="ch-msg" id="ch-msg">Complete your first session to set a personal record!</div>
+    <div class="track"><div class="fill" id="ch-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Smart Reinforce banner -->
+  <div class="reinforce-banner" id="reinforce-banner">
+    <div class="rb-head"><span class="ri">🎯</span><strong>Needs Practice</strong></div>
+    <div class="rb-desc" id="rb-desc">Based on your results, these topics need more work:</div>
+    <div class="rb-topics" id="rb-topics"></div>
+    <button class="btn-pri btn-full" onclick="startSmartSession()" style="font-size:.86rem;padding:11px">Start Reinforcement Session →</button>
+  </div>
+
+  <!-- Term tabs -->
+  <div class="term-tabs">
+    <button class="term-tab active" id="tab-autumn" onclick="switchTerm('autumn')">🍂 Autumn</button>
+    <button class="term-tab" id="tab-spring" onclick="switchTerm('spring')">🌱 Spring</button>
+    <button class="term-tab" id="tab-summer" onclick="switchTerm('summer')">☀️ Summer</button>
+  </div>
+
+  <!-- Topic list -->
+  <div class="topics" id="topic-list"></div>
+
+</div><!-- end s-home -->
+
+<!-- ═══════════ PROGRESS ═══════════ -->
+<div id="s-progress" class="screen">
+  <div class="topbar">
+    <div class="logo">Maths<em>.</em>Academy</div>
+    <div class="year-tag">Year 5</div>
+  </div>
+  <div class="progress-header">
+    <h2>My Progress</h2>
+    <p>See where you're strongest and what needs more practice.</p>
+  </div>
+
+  <div id="progress-body">
+    <div class="no-data-msg">
+      <span class="nd-icon">📊</span>
+      Complete some sessions and your progress will appear here!
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ QUESTIONS ═══════════ -->
+<div id="s-q" class="screen">
+  <div class="q-bar">
+    <button class="back" onclick="goHome()">← Home</button>
+    <div class="q-pills">
+      <div class="timer" id="timer">0:00</div>
+      <div class="topic-pill2" id="q-pill">Topic</div>
+    </div>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="qcard" id="qcard">
+    <div class="qcard-top">
+      <span class="diff warm" id="diff-tag">Warm-up</span>
+      <button class="hint-btn" onclick="toggleHint()">💡 Remind me how</button>
+    </div>
+    <div class="qnum" id="qnum">Question 1 of 10</div>
+    <div class="qtext" id="qtext">…</div>
+    <div id="ans-area"></div>
+    <div class="fb" id="fb"><span class="fb-ic"></span><span id="fb-text"></span></div>
+    <div class="hint-box" id="hint-box"><div class="hint-ttl">How to solve it 💡</div><div id="hint-body"></div></div>
+  </div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">Next question →</button>
+</div>
+
+<!-- ═══════════ RESULTS ═══════════ -->
+<div id="s-res" class="screen">
+  <div class="topbar"><div class="logo">Maths<em>.</em>Academy</div><div class="year-tag">Year 5</div></div>
+  <div class="ring-wrap">
+    <svg viewBox="0 0 110 110" width="110" height="110">
+      <circle class="ring-bg" cx="55" cy="55" r="46"/>
+      <circle class="ring-arc" id="ring-arc" cx="55" cy="55" r="46" stroke="#1a56db"/>
+    </svg>
+    <div class="ring-inner"><span class="ring-big" id="ring-n">0</span><span class="ring-sm">/ 10</span></div>
+  </div>
+  <div class="res-title" id="res-title">Well done!</div>
+  <div class="res-sub" id="res-sub">Keep practising.</div>
+  <div class="rec-banner" id="rec-banner">
+    <div class="ri">🏆</div>
+    <div class="rt"><strong>New personal record!</strong><br>Show a parent — prize time! 🎁</div>
+  </div>
+  <div class="res-grid">
+    <div class="rtile"><span class="rtile-n" id="r-score">0/10</span><span class="rtile-l">Score</span></div>
+    <div class="rtile"><span class="rtile-n" id="r-time">—</span><span class="rtile-l">Time</span></div>
+    <div class="rtile"><span class="rtile-n" id="r-lv">1</span><span class="rtile-l">Level</span></div>
+  </div>
+  <div class="lvlup" id="lvlup">🚀 Level up! Harder questions unlocked.</div>
+  <div class="q-breakdown" id="q-breakdown"></div>
+  <div class="hr"></div>
+  <div class="gap8">
+    <button class="btn-pri" onclick="playAgain()">Play again — beat my score</button>
+    <button class="btn-sec" onclick="goHome()">Choose a different topic</button>
+  </div>
+</div>
+
+<!-- Nav bar -->
+<div class="nav-bar">
+  <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="ni">🏠</span>Home</button>
+  <button class="nav-item" id="nav-progress" onclick="navTo('progress')"><span class="ni">📊</span>Progress</button>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ══════════════════════════════════════════════
+//  TOPIC DEFINITIONS
+// ══════════════════════════════════════════════
+const TOPICS = {
+  autumn:[
+    {id:'placevalue', name:'Place Value',                sub:'Numbers to 1,000,000 · Powers of 10',    icon:'🔢',ic:'blue'},
+    {id:'addsub',     name:'Addition & Subtraction',     sub:'Mental & column method · Estimates',      icon:'➕',ic:'green'},
+    {id:'muldivA',    name:'Multiplication & Division A',sub:'Multiples · Factors · Primes · Squares',  icon:'✖️',ic:'amber'},
+    {id:'fracA',      name:'Fractions A',                sub:'Equivalents · Compare · Add & subtract',  icon:'½', ic:'purple'},
+  ],
+  spring:[
+    {id:'muldivB',    name:'Multiplication & Division B',sub:'Long/short multiplication · Division',    icon:'✖️',ic:'amber'},
+    {id:'fracB',      name:'Fractions B',                sub:'Improper · Mixed numbers · Multiply',     icon:'½', ic:'purple'},
+    {id:'decpct',     name:'Decimals & Percentages',     sub:'Decimal places · % as fractions',         icon:'%', ic:'teal'},
+    {id:'perimarea',  name:'Perimeter & Area',           sub:'Rectangles · Compound shapes',            icon:'📐',ic:'rose'},
+    {id:'stats',      name:'Statistics',                 sub:'Tables · Line graphs · Two-way charts',   icon:'📊',ic:'blue'},
+  ],
+  summer:[
+    {id:'shape',      name:'Shape',                      sub:'Angles · Polygons · Missing angles',      icon:'🔷',ic:'amber'},
+    {id:'position',   name:'Position & Direction',       sub:'Coordinates · Reflection · Translation',  icon:'🗺️',ic:'green'},
+    {id:'decimals2',  name:'Decimals',                   sub:'Multiply/divide decimals · Rounding',     icon:'.5',ic:'teal'},
+    {id:'negative',   name:'Negative Numbers',           sub:'Count through zero · Calculate',          icon:'−', ic:'rose'},
+    {id:'converting', name:'Converting Units',           sub:'Metric & imperial · Time',                icon:'⚖️',ic:'purple'},
+    {id:'volume',     name:'Volume',                     sub:'cm³ · Cuboids · Missing dimensions',      icon:'📦',ic:'blue'},
+  ]
+};
+const ALL_TOPICS = [...TOPICS.autumn,...TOPICS.spring,...TOPICS.summer];
+const ICON_C = {
+  blue:  ['#eff6ff','#1d4ed8'], green: ['#f0fdf4','#15803d'],
+  amber: ['#fffbeb','#b45309'], purple:['#f5f3ff','#7c3aed'],
+  teal:  ['#f0fdfa','#0d766e'], rose:  ['#fff1f2','#be185d'],
+};
+const LEVEL_NAMES = ['','Beginner','Developing','Secure','Confident','Advanced','Master'];
+
+// ══════════════════════════════════════════════
+//  PERSISTENCE
+// ══════════════════════════════════════════════
+const KEY = 'mathsAcadY5v3';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch{return{};}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch{}}
+
+let S = load();
+const ids = ALL_TOPICS.map(t=>t.id);
+if(!S.lvl)    S.lvl    = Object.fromEntries(ids.map(id=>[id,1]));
+if(!S.best)   S.best   = Object.fromEntries([...ids,'overall'].map(id=>[id,0]));
+if(!S.stars)  S.stars  = 0;
+if(!S.streak) S.streak = 0;
+if(!S.lastDay)S.lastDay= null;
+if(!S.todayBest)S.todayBest = 0;
+// Per-topic accuracy tracking: {correct, total, sessions, lastAcc, history:[{acc,date}]}
+if(!S.perf) S.perf = {};
+ids.forEach(id=>{
+  if(!S.perf[id]) S.perf[id]={correct:0,total:0,sessions:0,lastAcc:null,history:[]};
+  if(!S.lvl[id])  S.lvl[id]=1;
+  if(!S.best[id]) S.best[id]=0;
+});
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[rnd(0,a.length-1)];
+const shuf=a=>[...a].sort(()=>Math.random()-.5);
+function topicName(id){ return ALL_TOPICS.find(t=>t.id===id)?.name||id; }
+function getAcc(id){
+  const p=S.perf[id];
+  return p&&p.total>0 ? Math.round(p.correct/p.total*100) : null;
+}
+function getWeakTopics(threshold=55, minSessions=2){
+  return ids.filter(id=>S.perf[id].sessions>=minSessions && getAcc(id)!==null && getAcc(id)<threshold)
+            .sort((a,b)=>getAcc(a)-getAcc(b));
+}
+function getStrongTopics(threshold=80, minSessions=2){
+  return ids.filter(id=>S.perf[id].sessions>=minSessions && getAcc(id)!==null && getAcc(id)>=threshold)
+            .sort((a,b)=>getAcc(b)-getAcc(a));
+}
+function totalQAnswered(){
+  return ids.reduce((sum,id)=>sum+(S.perf[id].total||0),0);
+}
+
+// ══════════════════════════════════════════════
+//  QUESTION GENERATORS  (Y5 White Rose)
+// ══════════════════════════════════════════════
+const mcWrap=(q,ans,wrongs,hint,topic)=>{
+  const pool=shuf([ans,...wrongs].filter((v,i,a)=>a.indexOf(v)===i&&v!==null)).slice(0,4);
+  if(!pool.includes(ans))pool[0]=ans;
+  return {q,ans:String(ans),type:'mc',choices:shuf(pool).map(String),hint,topic};
+};
+
+const GENS = {
+  placevalue(lv){
+    if(lv<=2){
+      const n=rnd(1000,99999);
+      const dcols={10000:'ten-thousands',1000:'thousands',100:'hundreds',10:'tens',1:'ones'};
+      const d=pick([10000,1000,100,10,1]);
+      const val=Math.floor(n/d)%10*d;
+      return mcWrap(`What is the value of the ${dcols[d]} digit in ${n.toLocaleString()}?`,val,[val*2,Math.max(1,val/2),val+d,Math.max(1,val-d)].filter(x=>x>0&&x!==val),`The value of a digit = digit × its column value. In ${n.toLocaleString()}, look at the ${dcols[d]} column.`,'placevalue');
+    }
+    if(lv<=4){
+      const n=rnd(10,999);
+      const m=pick([10,100,1000]);
+      const ans=n*m;
+      return {q:`${n.toLocaleString()} × ${m.toLocaleString()} = ?`,ans:String(ans),type:'input',hint:`Multiplying by ${m}: shift every digit ${String(m).length-1} place(s) to the left. Add zeros as placeholders.`,topic:'placevalue'};
+    }
+    const pairs=[[1,'I'],[4,'IV'],[5,'V'],[9,'IX'],[10,'X'],[40,'XL'],[50,'L'],[90,'XC'],[100,'C'],[400,'CD'],[500,'D'],[900,'CM'],[1000,'M']];
+    const toRoman=n=>{let r='';for(let i=pairs.length-1;i>=0;i--){while(n>=pairs[i][0]){r+=pairs[i][1];n-=pairs[i][0];}}return r;};
+    const n=rnd(4,30)*rnd(1,30);const roman=toRoman(Math.min(n,1000));
+    if(Math.random()<.5) return mcWrap(`What number is ${roman}?`,Math.min(n,1000),[Math.min(n,1000)+1,Math.max(1,Math.min(n,1000)-1),Math.min(n,1000)+10,Math.max(1,Math.min(n,1000)-10)].filter(x=>x>0&&x!==Math.min(n,1000)),`I=1 V=5 X=10 L=50 C=100 D=500 M=1000. Smaller before larger = subtract (e.g. IX=9).`,'placevalue');
+    return {q:`Write ${Math.min(n,1000)} in Roman numerals.`,ans:roman,type:'input',hint:`I=1 V=5 X=10 L=50 C=100 D=500 M=1000.\nSmaller before larger = subtract (IV=4, IX=9, XL=40, XC=90, CD=400, CM=900).`,topic:'placevalue'};
+  },
+  addsub(lv){
+    const hc=`<b>Column method:</b> line up digits by place value, work right to left. Carry or borrow as needed.`;
+    if(lv<=2){const a=rnd(100,9999),b=rnd(100,a),op=pick(['+','-']),ans=op==='+'?a+b:a-b;return {q:`${a.toLocaleString()} ${op} ${b.toLocaleString()} = ?`,ans:String(ans),type:'input',hint:hc,topic:'addsub'};}
+    if(lv<=4){const a=rnd(10000,99999),b=rnd(1000,a),op=pick(['+','-']),ans=op==='+'?a+b:a-b;return {q:`${a.toLocaleString()} ${op} ${b.toLocaleString()} = ?`,ans:String(ans),type:'input',hint:`${hc}<br>Estimate first by rounding to the nearest 1,000.`,topic:'addsub'};}
+    const a=rnd(1000,9999),b=pick([99,999,101,1001,998,9999]);const ans=a+b;
+    return {q:`${a.toLocaleString()} + ${b.toLocaleString()} = ?`,ans:String(ans),type:'input',hint:`<b>Mental trick:</b> ${b} is close to a round number!<br>${a} + ${b} ≈ ${a} + ${b>500?1000:100} then adjust by ${Math.abs(b>500?1000-b:100-b)}.`,topic:'addsub'};
+  },
+  muldivA(lv){
+    if(lv<=2){const n=pick([3,4,6,7,8,9]),ans=n*rnd(2,12);return mcWrap(`Which of these is a multiple of ${n}?`,ans,[ans+1,ans-1,ans+n-1,ans-n+1].filter(x=>x>0&&x%n!==0),`A multiple of ${n} is in the ${n} times table.`,'muldivA');}
+    if(lv<=3){
+      const n=pick([12,18,24,30,36,48]);const fs=[];for(let i=1;i<=n;i++)if(n%i===0)fs.push(i);
+      const f=pick(fs.filter(x=>x>1&&x<n));const nonF=pick([5,7,8,11,13].filter(x=>n%x!==0));
+      return mcWrap(`Which is a factor of ${n}?`,String(f),[String(nonF),String(f+1),String(f-1)].filter(x=>x!==String(f)),`A factor of ${n} divides into it exactly with no remainder. ${n}÷${f}=${n/f} ✓`,'muldivA');
+    }
+    if(lv<=4){const s=pick([2,3,4,5,6,7,8,9,10,11,12]);return {q:`What is ${s}²?`,ans:String(s*s),type:'input',hint:`A square number = a number × itself.\n${s}² = ${s} × ${s} = ${s*s}`,topic:'muldivA'};}
+    const c=pick([2,3,4,5]);return {q:`What is ${c}³?`,ans:String(c*c*c),type:'input',hint:`A cube number = number × itself × itself.\n${c}³ = ${c}×${c}×${c} = ${c*c*c}`,topic:'muldivA'};
+  },
+  fracA(lv){
+    if(lv<=2){const d=pick([3,4,5,6,8,10]),n=rnd(1,d-1),m=pick([2,3,4]);return mcWrap(`Which fraction equals ${n}/${d}?`,`${n*m}/${d*m}`,[`${n*m+1}/${d*m}`,`${n+1}/${d}`,`${n}/${d*m}`],`<b>Equivalent fractions:</b> multiply top AND bottom by the same number.\n${n}/${d} = (${n}×${m})/(${d}×${m}) = ${n*m}/${d*m}`,'fracA');}
+    if(lv<=4){const d=pick([4,5,6,8,10]),n1=rnd(1,d-2),n2=rnd(1,d-1-n1),sum=n1+n2;return {q:`${n1}/${d} + ${n2}/${d} = ?`,ans:`${sum}/${d}`,type:'input',hint:`<b>Same denominator:</b> just add the tops.\n${n1}+${n2}=${sum}, keep /${d} → ${sum}/${d}`,topic:'fracA'};}
+    const d=pick([4,5,6,8,10]),n1=rnd(1,d-1),n2=rnd(1,d-1);
+    if(n1===n2)return GENS.fracA(lv);
+    const larger=Math.max(n1,n2),smaller=Math.min(n1,n2);
+    return {q:`Which is bigger: ${larger}/${d} or ${smaller}/${d}?`,ans:`${larger}/${d}`,type:'input',hint:`Same denominator → bigger numerator (top) = bigger fraction.\n${larger} > ${smaller} so ${larger}/${d} > ${smaller}/${d}`,topic:'fracA'};
+  },
+  muldivB(lv){
+    if(lv<=2){const a=rnd(10,99),b=rnd(11,29),ans=a*b;return {q:`${a} × ${b} = ?`,ans:String(ans),type:'input',hint:`<b>Grid method:</b>\n${a}×${b} = ${a}×${Math.floor(b/10)*10} + ${a}×${b%10}\n= ${a*Math.floor(b/10)*10} + ${a*(b%10)} = ${ans}`,topic:'muldivB'};}
+    if(lv<=4){const a=rnd(100,999),b=rnd(11,29),ans=a*b;return {q:`${a} × ${b} = ?`,ans:String(ans),type:'input',hint:`<b>Long multiplication:</b>\n${a}×${b%10} = ${a*(b%10)}\n${a}×${Math.floor(b/10)*10} = ${a*Math.floor(b/10)*10}\nTotal: ${ans}`,topic:'muldivB'};}
+    const b2=pick([3,4,6,7,8,9]),ans2=rnd(10,999),a2=b2*ans2;
+    return {q:`${a2} ÷ ${b2} = ?`,ans:String(ans2),type:'input',hint:`<b>Bus-stop (short) division:</b> how many ${b2}s fit into each digit of ${a2}, left to right? Carry remainders.`,topic:'muldivB'};
+  },
+  fracB(lv){
+    if(lv<=2){const d=rnd(2,8),n=rnd(1,d-1),w=rnd(1,4),top=w*d+n;return mcWrap(`Convert ${w} and ${n}/${d} to an improper fraction.`,`${top}/${d}`,[`${w+n}/${d}`,`${top}/${d+1}`,`${top-1}/${d}`],`<b>Mixed → improper:</b> (whole × denominator) + numerator.\n(${w}×${d})+${n} = ${top} → ${top}/${d}`,'fracB');}
+    if(lv<=4){const d=rnd(3,6),n=rnd(1,d-1),int=rnd(2,5),top=n*int,w=Math.floor(top/d),rem=top%d,ans=rem===0?String(w):`${w} and ${rem}/${d}`;return {q:`${n}/${d} × ${int} = ?`,ans,type:'input',hint:`Multiply just the top number: (${n}×${int})/${d}=${top}/${d}${top>=d?' = '+ans:''}`,topic:'fracB'};}
+    const d=pick([4,5,6,8]),w1=rnd(1,3),n1=rnd(1,d-1),w2=rnd(1,3),n2=rnd(1,d-1);
+    const tf=n1+n2,ew=Math.floor(tf/d),rf=tf%d,tw=w1+w2+ew;
+    const ans=rf===0?String(tw):`${tw} and ${rf}/${d}`;
+    return {q:`${w1} and ${n1}/${d}  +  ${w2} and ${n2}/${d} = ?`,ans,type:'input',hint:`Add wholes: ${w1}+${w2}=${w1+w2}. Add fractions: ${n1}/${d}+${n2}/${d}=${tf}/${d}${ew>0?' = '+ew+' and '+rf+'/'+d:''}. Total: ${ans}`,topic:'fracB'};
+  },
+  decpct(lv){
+    if(lv<=2){const n=rnd(1,99),d=rnd(1,9),val=parseFloat(`${n}.${d}`);return mcWrap(`What is ${n} and ${d} tenths as a decimal?`,val,[val+0.1,val-0.1,val+1,parseFloat(`${n}.${d+1}`)].filter(x=>x>0&&x!==val),`The first digit after the decimal = tenths. ${val} = ${n} ones and ${d} tenths.`,'decpct');}
+    if(lv<=4){const pct=pick([10,20,25,50,75,5]),base=rnd(2,20)*10,ans=base*pct/100;const fm={10:'÷10',20:'÷5',25:'÷4',50:'÷2',75:'×3÷4',5:'÷20'};return {q:`What is ${pct}% of ${base}?`,ans:String(ans),type:'input',hint:`${pct}% of ${base}: ${pct}% means ${pct}/100.\n${base} ${fm[pct]} = ${ans}`,topic:'decpct'};}
+    const ds=shuf([rnd(1,9)/10,rnd(10,99)/100,rnd(1,9)/10+rnd(1,9)/100,rnd(1,3)+rnd(1,9)/10].map(x=>Math.round(x*100)/100));
+    const sorted=[...ds].sort((a,b)=>a-b);
+    return {q:`Order smallest to largest:\n${ds.join('   ')}`,ans:sorted.join(', '),type:'input',hint:`Compare tenths first, then hundredths. The smallest is ${sorted[0]}.`,topic:'decpct'};
+  },
+  perimarea(lv){
+    if(lv<=2){const w=rnd(3,15),h=rnd(3,15),p=2*(w+h);return {q:`A rectangle is ${w} cm wide and ${h} cm tall.\nWhat is its perimeter?`,ans:String(p),type:'input',hint:`Perimeter of rectangle = 2 × (width + height)\n= 2 × (${w}+${h}) = 2×${w+h} = ${p} cm`,topic:'perimarea'};}
+    if(lv<=4){const w=rnd(3,12),h=rnd(3,12),a=w*h;return {q:`A rectangle is ${w} cm wide and ${h} cm tall.\nWhat is its area?`,ans:String(a),type:'input',hint:`Area of rectangle = width × height\n= ${w} × ${h} = ${a} cm²`,topic:'perimarea'};}
+    const w1=rnd(5,12),h1=rnd(5,12),w2=rnd(2,w1-2),h2=rnd(2,h1-2);
+    return {q:`An L-shape: ${w1}×${h1} rectangle\nwith a ${w2}×${h2} piece cut from one corner.\nWhat is the area?`,ans:String(w1*h1-w2*h2),type:'input',hint:`Compound area: big rectangle − cut piece.\n${w1}×${h1} − ${w2}×${h2} = ${w1*h1} − ${w2*h2} = ${w1*h1-w2*h2} cm²`,topic:'perimarea'};
+  },
+  stats(lv){
+    const days=['Mon','Tue','Wed','Thu','Fri'],vals=days.map(()=>rnd(2,12));
+    const total=vals.reduce((a,b)=>a+b,0),avg=Math.round(total/vals.length);
+    const maxD=days[vals.indexOf(Math.max(...vals))];
+    if(lv<=3)return {q:`Books read each day:\n${days.map((d,i)=>d+':'+vals[i]).join('  ')}\n\nTotal books read?`,ans:String(total),type:'input',hint:`Add all values: ${vals.join('+')} = ${total}`,topic:'stats'};
+    return mcWrap(`${days.map((d,i)=>d+':'+vals[i]).join('  ')}\n\nWhich day had most books?`,maxD,days.filter(d=>d!==maxD),`Find the largest value (${Math.max(...vals)}), which was on ${maxD}.`,'stats');
+  },
+  shape(lv){
+    if(lv<=2){const shapes={triangle:180,quadrilateral:360,pentagon:540,hexagon:720,octagon:1080};const [s,t]=pick(Object.entries(shapes));const sides={triangle:3,quadrilateral:4,pentagon:5,hexagon:6,octagon:8}[s];return mcWrap(`Sum of interior angles in a ${s}?`,`${t}°`,[`${t-180}°`,`${t+180}°`,`${sides*90}°`],`Sum of angles = (sides−2)×180°\n(${sides}−2)×180 = ${(sides-2)*180}°`,'shape');}
+    if(lv<=4){
+      const total=pick([180,360,540]);const count=total===180?2:total===360?3:4;
+      const known=Array.from({length:count},()=>rnd(25,130));
+      const missing=total-known.reduce((a,b)=>a+b,0);
+      if(missing<10||missing>160)return GENS.shape(lv);
+      return {q:`Angles in a shape add to ${total}°.\nKnown angles: ${known.join('°, ')}°\nWhat is the missing angle?`,ans:String(missing),type:'input',hint:`All angles add to ${total}°.\nKnown total = ${known.join('+')} = ${known.reduce((a,b)=>a+b,0)}°\nMissing = ${total}−${known.reduce((a,b)=>a+b,0)} = ${missing}°`,topic:'shape'};
+    }
+    const n=pick([3,4,5,6,8]),names={3:'equilateral triangle',4:'square',5:'regular pentagon',6:'regular hexagon',8:'regular octagon'};
+    const t=(n-2)*180,e=t/n;
+    return {q:`Each interior angle of a ${names[n]}?`,ans:String(e),type:'input',hint:`Regular polygon: all angles equal.\nTotal = (${n}−2)×180 = ${t}°\nEach = ${t}÷${n} = ${e}°`,topic:'shape'};
+  },
+  position(lv){
+    if(lv<=3){
+      const x=rnd(0,8),y=rnd(0,8),mx=pick([-3,-2,-1,1,2,3]),my=pick([-3,-2,-1,1,2,3]);
+      const nx=x+mx,ny=y+my;
+      if(nx<0||ny<0||nx>10||ny>10)return GENS.position(lv);
+      return {q:`Point A is at (${x}, ${y}).\nTranslate: ${mx>0?'right':'left'} ${Math.abs(mx)}, ${my>0?'up':'down'} ${Math.abs(my)}.\nNew coordinates?`,ans:`(${nx}, ${ny})`,type:'input',hint:`Translation: x${mx>=0?'+':''}${mx}, y${my>=0?'+':''}${my}\n(${x},${y}) → (${nx},${ny})`,topic:'position'};
+    }
+    const x=rnd(1,7),y=rnd(1,7),axis=pick(['x-axis','y-axis']),rx=axis==='y-axis'?-x:x,ry=axis==='x-axis'?-y:y;
+    return {q:`Reflect point (${x}, ${y})\nin the ${axis}.\nNew coordinates?`,ans:`(${rx}, ${ry})`,type:'input',hint:`Reflection in the ${axis}: the ${axis==='x-axis'?'y':'x'}-coordinate changes sign.\n(${x},${y}) → (${rx},${ry})`,topic:'position'};
+  },
+  decimals2(lv){
+    if(lv<=2){const n=Math.round(rnd(1,99)*10+rnd(1,9))/10,m=pick([10,100]),ans=Math.round(n*m*100)/100;return {q:`${n} × ${m} = ?`,ans:String(ans),type:'input',hint:`Multiply decimal by ${m}: move decimal point ${String(m).length-1} place(s) right.\n${n} × ${m} = ${ans}`,topic:'decimals2'};}
+    if(lv<=4){const n=Math.round(rnd(10,990))/10,m=pick([10,100]),ans=Math.round(n/m*1000)/1000;return {q:`${n} ÷ ${m} = ?`,ans:String(ans),type:'input',hint:`Divide decimal by ${m}: move decimal point ${String(m).length-1} place(s) left.\n${n} ÷ ${m} = ${ans}`,topic:'decimals2'};}
+    const n=Math.round(rnd(100,9999))/100,dp=pick([0,1]),ans=n.toFixed(dp);
+    return {q:`Round ${n} to ${dp===0?'nearest whole number':'1 decimal place'}.`,ans,type:'input',hint:`Look at the digit after your rounding position.\nIf ≥5 round up, if <5 round down.\n${n} → ${ans}`,topic:'decimals2'};
+  },
+  negative(lv){
+    if(lv<=2){const a=rnd(-10,0),b=rnd(-10,0),ans=a+b;return mcWrap(`${a} + ${b} = ?`,ans,[ans+1,ans-1,ans+2,ans+3],`Start at ${a} on a number line and move ${Math.abs(b)} steps left. You reach ${ans}.`,'negative');}
+    if(lv<=4){const a=rnd(-5,10),b=rnd(-10,a-1),diff=a-b;return {q:`Difference between ${a} and ${b}?`,ans:String(diff),type:'input',hint:`Difference = higher − lower\n${a} − (${b}) = ${a}+${-b} = ${diff}`,topic:'negative'};}
+    const a=rnd(-15,10),b=rnd(-15,10),c=rnd(-10,10),ans=a+b+c;
+    return {q:`${a} + ${b} + ${c} = ?`,ans:String(ans),type:'input',hint:`Add left to right:\n${a}+${b}=${a+b}, then +${c} = ${ans}`,topic:'negative'};
+  },
+  converting(lv){
+    const units=[{f:'km',t:'m',x:1000,h:'1 km = 1,000 m → ×1000'},{f:'m',t:'cm',x:100,h:'1 m = 100 cm → ×100'},{f:'cm',t:'mm',x:10,h:'1 cm = 10 mm → ×10'},{f:'kg',t:'g',x:1000,h:'1 kg = 1,000 g → ×1000'},{f:'l',t:'ml',x:1000,h:'1 litre = 1,000 ml → ×1000'}];
+    const u=pick(units);const n=rnd(1,lv<=3?20:200);const small=Math.random()<.5;
+    return {q:small?`${n} ${u.f} = ? ${u.t}`:`${n*u.x} ${u.t} = ? ${u.f}`,ans:small?String(n*u.x):String(n),type:'input',hint:`${u.h}${small?'':`\nTo convert back ÷ by ${u.x}`}`,topic:'converting'};
+  },
+  volume(lv){
+    if(lv<=3){const w=rnd(2,6),h=rnd(2,6),d=rnd(2,6),v=w*h*d;return {q:`Cuboid: ${w} cm × ${h} cm × ${d} cm.\nWhat is the volume?`,ans:String(v),type:'input',hint:`Volume = length × width × height\n= ${w}×${h}×${d} = ${w*h}×${d} = ${v} cm³`,topic:'volume'};}
+    const w=rnd(2,5),h=rnd(2,5),d=rnd(2,5),v=w*h*d;
+    const known=shuf([w,h,d]).slice(0,2);const miss=v/(known[0]*known[1]);
+    return {q:`Cuboid volume = ${v} cm³.\nTwo sides are ${known[0]} cm and ${known[1]} cm.\nThird dimension?`,ans:String(miss),type:'input',hint:`v = l×w×h → ${v} = ${known[0]}×${known[1]}×?\n? = ${v}÷${known[0]*known[1]} = ${miss} cm`,topic:'volume'};
+  },
+};
+
+function makeSession(topicId, level, n=10){
+  const gen=GENS[topicId];
+  return Array.from({length:n},(_,i)=>{
+    const lv=i<2?Math.max(1,level-1):i<7?level:Math.min(6,level+1);
+    return {...gen(lv),_lv:lv};
+  });
+}
+
+// ══════════════════════════════════════════════
+//  SESSION STATE
+// ══════════════════════════════════════════════
+let activeTerm='autumn';
+let topic, qs, qi, score, answers, sessStart, tick;
+let hintOpen=false, isSmartSession=false;
+
+// ══════════════════════════════════════════════
+//  HOME UI
+// ══════════════════════════════════════════════
+function updateHome(){
+  document.getElementById('h-streak').textContent=S.streak;
+  document.getElementById('h-record').textContent=S.best.overall||'—';
+  document.getElementById('h-stars').textContent=S.stars;
+
+  const rec=S.best.overall||0,target=rec>0?rec+1:5;
+  document.getElementById('ch-msg').innerHTML=rec>0
+    ?`Your record is <strong>${rec}/10</strong>. Score <strong>${target}/10</strong> to beat it and earn a reward! 🎁`
+    :`Complete your first session to set a personal record!`;
+  document.getElementById('ch-status').textContent=S.todayBest>0?`Today: ${S.todayBest}/10`:'Not started';
+  document.getElementById('ch-fill').style.width=Math.min(100,(S.todayBest/Math.max(target,1))*100)+'%';
+
+  // Reinforce banner
+  const weak=getWeakTopics();
+  const rbEl=document.getElementById('reinforce-banner');
+  if(weak.length>0){
+    rbEl.classList.add('show');
+    document.getElementById('rb-desc').textContent=`Based on your results, ${weak.length===1?'this topic needs':'these topics need'} more practice:`;
+    document.getElementById('rb-topics').innerHTML=weak.slice(0,3).map(id=>`<span class="rb-chip">${topicName(id)} (${getAcc(id)}%)</span>`).join('');
+  } else { rbEl.classList.remove('show'); }
+
+  renderTopicList();
+}
+
+function renderTopicList(){
+  const list=document.getElementById('topic-list');
+  if(!list)return;
+  list.innerHTML='';
+  const weak=getWeakTopics();
+  const strong=getStrongTopics();
+  TOPICS[activeTerm].forEach(t=>{
+    const lv=S.lvl[t.id]||1;
+    const acc=getAcc(t.id);
+    const isWeak=weak.includes(t.id);
+    const isStrong=strong.includes(t.id);
+    const [bg,fg]=ICON_C[t.ic];
+    const row=document.createElement('button');
+    row.className='topic-row'+(isWeak?' weak-highlight':'');
+    row.onclick=()=>startTopic(t.id);
+    const lvClass=lv<=2?'l1':lv<=4?'l3':'l5';
+    const accBadge=acc!==null?(isWeak?`<span class="weak-flag">⚠️ ${acc}% — needs work</span>`:isStrong?`<span class="strong-flag">✓ ${acc}%</span>`:`<span style="font-size:.68rem;color:var(--muted)">${acc}%</span>`):'';
+    row.innerHTML=`
+      <div class="t-icon" style="background:${isWeak?'#fef3c7':bg}"><span style="color:${isWeak?'#b45309':fg};font-size:1.1rem">${t.icon}</span></div>
+      <div class="t-info"><div class="t-name">${t.name}</div><div class="t-sub">${t.sub}</div></div>
+      <div class="t-right">
+        <div class="lvl-badge ${lvClass}" style="background:${bg};color:${fg}">${LEVEL_NAMES[lv]}</div>
+        <div>${accBadge}</div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function switchTerm(term){
+  activeTerm=term;
+  document.querySelectorAll('.term-tab').forEach(b=>b.classList.remove('active'));
+  const tab=document.getElementById('tab-'+term);
+  if(tab)tab.classList.add('active');
+  renderTopicList();
+}
+
+// ══════════════════════════════════════════════
+//  SMART REINFORCEMENT SESSION
+// ══════════════════════════════════════════════
+function startSmartSession(){
+  const weak=getWeakTopics();
+  if(!weak.length)return;
+  isSmartSession=true;
+  // Pull 10 questions proportionally from weak topics
+  qs=[];
+  const pool=weak.slice(0,3);
+  const perTopic=Math.ceil(10/pool.length);
+  pool.forEach(id=>{
+    for(let i=0;i<perTopic&&qs.length<10;i++){
+      qs.push({...GENS[id](S.lvl[id]),_lv:S.lvl[id]});
+    }
+  });
+  qs=shuf(qs).slice(0,10);
+  topic=pool[0]; // primary topic for level tracking
+  startSessionCommon('🎯 Reinforcement');
+}
+
+
+
+// ══════════════════════════════════════════════
+//  START TOPIC SESSION
+// ══════════════════════════════════════════════
+function startTopic(id){
+  isSmartSession=false;
+  topic=id;
+  qs=makeSession(id,S.lvl[id]);
+  const tObj=ALL_TOPICS.find(t=>t.id===id);
+  const [bg,fg]=ICON_C[tObj.ic];
+  const pill=document.getElementById('q-pill');
+  pill.textContent=tObj.name; pill.style.background=bg; pill.style.color=fg;
+  document.getElementById('ai-mode-pill').style.display='none';
+  startSessionCommon(tObj.name);
+}
+
+function startSessionCommon(label){
+  qi=0; score=0; answers=[]; hintOpen=false;
+  sessStart=Date.now();
+  clearInterval(tick);
+  tick=setInterval(tickT,1000);
+
+  // Restore qcard HTML if it was replaced by AI loader
+  document.getElementById('qcard').innerHTML=`
+    <div class="qcard-top">
+      <span class="diff warm" id="diff-tag">Warm-up</span>
+      <button class="hint-btn" onclick="toggleHint()">💡 Remind me how</button>
+    </div>
+    <div class="qnum" id="qnum">Question 1 of 10</div>
+    <div class="qtext" id="qtext">…</div>
+    <div id="ans-area"></div>
+    <div class="fb" id="fb"><span class="fb-ic"></span><span id="fb-text"></span></div>
+    <div class="hint-box" id="hint-box"><div class="hint-ttl">How to solve it 💡</div><div id="hint-body"></div></div>`;
+
+  show('s-q');
+  renderQ();
+}
+
+function tickT(){
+  const s=Math.floor((Date.now()-sessStart)/1000);
+  const el=document.getElementById('timer');
+  if(!el)return;  // guard: screen may have changed
+  el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  el.className='timer'+(s>150?' warn':'');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER QUESTION
+// ══════════════════════════════════════════════
+function renderQ(){
+  const q=qs[qi];
+  if(!q)return;  // guard
+  hintOpen=false;
+  const hb=document.getElementById('hint-box'); if(hb)hb.classList.remove('on');
+  const fb=document.getElementById('fb'); if(fb)fb.classList.remove('on','ok','bad');
+  const nb=document.getElementById('next-btn'); if(nb)nb.style.display='none';
+
+  document.getElementById('dots').innerHTML=qs.map((_,i)=>{
+    const c=i<qi?(answers[i]?'dot ok':'dot bad'):i===qi?'dot cur':'dot';
+    return `<div class="${c}"></div>`;
+  }).join('');
+
+  const tag=document.getElementById('diff-tag');
+  if(q._aiGenerated){tag.textContent='✨ AI Question';tag.className='diff ai';}
+  else if(qi<2){tag.textContent='Warm-up';tag.className='diff warm';}
+  else if(qi<7){tag.textContent='Medium';tag.className='diff med';}
+  else{tag.textContent='Challenge';tag.className='diff hard';}
+
+  document.getElementById('qnum').textContent=`Question ${qi+1} of ${qs.length}`;
+  document.getElementById('qtext').textContent=q.q;
+  document.getElementById('hint-body').innerHTML=q.hint||'Think carefully about which operation to use.';
+
+  const area=document.getElementById('ans-area');
+  if(q.type==='mc'){
+    // Store choices/answer on data attrs; use global onclick string (most compatible)
+    const safeCh=q.choices.map(c=>String(c).replace(/'/g,'&#39;').replace(/"/g,'&quot;'));
+    const safeAns=String(q.ans).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+    area.innerHTML='<div class="mc">'+q.choices.map((c,ci)=>{
+      const sc=String(c).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+      return '<button class="mc-btn" data-choice="'+sc+'" data-ans="'+safeAns+'" onclick="mcClick(this)">'+String(c)+'</button>';
+    }).join('')+'</div>';
+  } else {
+    area.innerHTML=`<input id="ain" class="ans-in" type="text" inputmode="text" placeholder="Your answer…" onkeydown="if(event.key==='Enter')checkIn()">
+    <button class="check-btn" onclick="checkIn()">Check answer</button>`;
+    setTimeout(()=>{const e=document.getElementById('ain');if(e)e.focus();},80);
+  }
+}
+
+function mcClick(btn){
+  if(btn.disabled)return;
+  const chosen=btn.dataset.choice, correct=btn.dataset.ans;
+  document.querySelectorAll('.mc-btn').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'ok':'bad');
+  if(!ok) document.querySelectorAll('.mc-btn').forEach(b=>{if(b.dataset.choice===correct)b.classList.add('reveal');});
+  doResult(ok,correct);
+}
+function checkMC(btn,chosen,correct){
+  if(btn.disabled)return;
+  document.querySelectorAll('.mc-btn').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'ok':'bad');
+  if(!ok) document.querySelectorAll('.mc-btn').forEach(b=>{if(String(b.textContent.trim())===String(correct))b.classList.add('reveal');});
+  doResult(ok,correct);
+}
+function checkIn(){
+  const inp=document.getElementById('ain');
+  if(!inp||!inp.value.trim())return;
+  const val=inp.value.trim().replace(/\s+/g,' ');
+  const q=qs[qi],correct=String(q.ans).trim();
+  const ok=val.toLowerCase()===correct.toLowerCase()||(!isNaN(val)&&!isNaN(correct)&&Math.abs(parseFloat(val)-parseFloat(correct))<0.01);
+  inp.classList.add(ok?'ok':'bad');
+  inp.disabled=true; const cb=document.querySelector('.check-btn'); if(cb)cb.disabled=true;
+  doResult(ok,correct);
+}
+const okM=['Correct — well done!','Spot on!','That\'s right!','Excellent!','Perfect!','Brilliant!'];
+const badM=['Not quite. The answer is ','Good try — it\'s ','Nearly! The answer was '];
+function doResult(ok,correct){
+  answers.push(ok); if(ok)score++;
+  const fb=document.getElementById('fb');
+  const fbt=document.getElementById('fb-text');
+  const nb=document.getElementById('next-btn');
+  const hb=document.getElementById('hint-box');
+  if(fbt)fbt.innerHTML=ok?`<strong>${pick(okM)}</strong>`:`<strong>${pick(badM)}${correct}.</strong> Check the hint below.`;
+  if(fb){const ic=fb.querySelector('.fb-ic');if(ic)ic.textContent=ok?'✓':'✗';fb.classList.add('on',ok?'ok':'bad');}
+  if(!ok&&hb){hintOpen=true;hb.classList.add('on');}
+  if(nb)nb.style.display='block';
+}
+function nextQ(){qi++;qi>=qs.length?endSession():renderQ();}
+function playAgain(){isSmartSession?startSmartSession():startTopic(topic);}
+function toggleHint(){hintOpen=!hintOpen;document.getElementById('hint-box').classList.toggle('on',hintOpen);}
+
+// ══════════════════════════════════════════════
+//  END SESSION + TRACK PERFORMANCE
+// ══════════════════════════════════════════════
+function endSession(){
+  clearInterval(tick);
+  const elapsed=Math.floor((Date.now()-sessStart)/1000);
+  const total=qs.length,pct=score/total;
+
+  // Track per-topic accuracy from this session
+  // Group answers by topic
+  const topicAnswers={};
+  qs.forEach((q,i)=>{
+    const tid=q.topic||topic;
+    if(!topicAnswers[tid])topicAnswers[tid]={correct:0,total:0};
+    topicAnswers[tid].total++;
+    if(answers[i])topicAnswers[tid].correct++;
+  });
+  Object.entries(topicAnswers).forEach(([tid,{correct,total}])=>{
+    if(!S.perf[tid])S.perf[tid]={correct:0,total:0,sessions:0,lastAcc:null,history:[]};
+    S.perf[tid].correct+=correct;
+    S.perf[tid].total+=total;
+    S.perf[tid].sessions++;
+    S.perf[tid].lastAcc=Math.round(correct/total*100);
+    S.perf[tid].history.push({acc:Math.round(correct/total*100),date:new Date().toLocaleDateString()});
+    if(S.perf[tid].history.length>20)S.perf[tid].history.shift();
+  });
+
+  // Streak
+  const today=new Date().toDateString();
+  if(S.lastDay!==today){const yest=new Date(Date.now()-86400000).toDateString();S.streak=S.lastDay===yest?S.streak+1:1;S.lastDay=today;S.todayBest=0;}
+  if(score>S.todayBest)S.todayBest=score;
+  if(pct>=0.8)S.stars+=pct===1?2:1;
+
+  const prevRec=S.best.overall||0,newRec=score>prevRec;
+  if(newRec)S.best.overall=score;
+  if(score>(S.best[topic]||0))S.best[topic]=score;
+
+  let leveledUp=false;
+  if(!isSmartSession){
+    if(pct>=0.8){S.lvl[topic]=Math.min(6,S.lvl[topic]+1);leveledUp=true;}
+    else if(pct<0.4&&S.lvl[topic]>1)S.lvl[topic]=Math.max(1,S.lvl[topic]-1);
+  }
+  save();
+
+  // Results UI
+  const arc=document.getElementById('ring-arc');
+  arc.setAttribute('stroke',pct>=0.8?'#15803d':pct>=0.5?'#1a56db':'#b45309');
+  setTimeout(()=>{arc.style.strokeDashoffset=289*(1-pct);},80);
+  document.getElementById('ring-n').textContent=score;
+
+  const titles=pct>=0.9?'Outstanding!':pct>=0.7?'Great work!':pct>=0.5?'Good effort!':'Keep going!';
+  const subs=pct>=0.9?'A star performance! ⭐':pct>=0.7?'You\'re making great progress.':pct>=0.5?'Getting there — keep practising!':'Every mistake helps you learn. Try again!';
+  document.getElementById('res-title').textContent=titles;
+  document.getElementById('res-sub').textContent=subs;
+  document.getElementById('r-score').textContent=`${score}/10`;
+  document.getElementById('r-time').textContent=`${Math.floor(elapsed/60)}m ${elapsed%60}s`;
+  document.getElementById('r-lv').textContent=S.lvl[topic];
+  document.getElementById('rec-banner').classList.toggle('on',newRec);
+  document.getElementById('lvlup').classList.toggle('on',leveledUp);
+
+  // Per-question breakdown
+  const bd=document.getElementById('q-breakdown');
+  bd.innerHTML=`<div class="q-breakdown-title">Question breakdown</div><div class="q-breakdown-list">${
+    qs.map((q,i)=>`<div class="qb-item ${answers[i]?'ok':'bad'}">
+      <span class="qb-icon">${answers[i]?'✓':'✗'}</span>
+      <span class="qb-text">${q.q.split('\n')[0]}</span>
+    </div>`).join('')
+  }</div>`;
+
+  show('s-res');
+  if(newRec||pct>=0.8)confetti();
+}
+
+// ══════════════════════════════════════════════
+//  PROGRESS SCREEN
+// ══════════════════════════════════════════════
+function renderProgress(){
+  const body=document.getElementById('progress-body');
+  const total=totalQAnswered();
+  if(total===0){
+    body.innerHTML=`<div class="no-data-msg"><span class="nd-icon">📊</span>Complete some sessions and your progress will appear here!</div>`;
+    return;
+  }
+
+  const weak=getWeakTopics(60,1);
+  const strong=getStrongTopics(75,1);
+  const played=ids.filter(id=>S.perf[id].total>0);
+  const overallAcc=played.length?Math.round(played.reduce((s,id)=>s+getAcc(id),0)/played.length):0;
+  const totalSess=ids.reduce((s,id)=>s+S.perf[id].sessions,0);
+
+  // Sort all played topics by accuracy
+  const sorted=[...played].sort((a,b)=>getAcc(a)-getAcc(b));
+
+  body.innerHTML=`
+    <div class="perf-grid">
+      <div class="perf-tile"><span class="perf-tile-n">${overallAcc}%</span><span class="perf-tile-l">Overall accuracy</span></div>
+      <div class="perf-tile"><span class="perf-tile-n">${total}</span><span class="perf-tile-l">Questions done</span></div>
+      <div class="perf-tile"><span class="perf-tile-n">${totalSess}</span><span class="perf-tile-l">Sessions</span></div>
+      <div class="perf-tile"><span class="perf-tile-n">${played.length}</span><span class="perf-tile-l">Topics tried</span></div>
+    </div>
+
+    ${weak.length>0?`
+    <div class="insight-card needs-work">
+      <h4>⚠️ Needs more practice</h4>
+      <p>${weak.slice(0,3).map(id=>`<strong>${topicName(id)}</strong> (${getAcc(id)}%)`).join(', ')} — keep working on ${weak.length===1?'this':'these'}. Try the Reinforcement Session!</p>
+    </div>`:''}
+
+    ${strong.length>0?`
+    <div class="insight-card going-well">
+      <h4>✅ Going really well</h4>
+      <p>${strong.slice(0,3).map(id=>`<strong>${topicName(id)}</strong> (${getAcc(id)}%)`).join(', ')} — excellent work!</p>
+    </div>`:''}
+
+    <div class="sw-section" style="margin-top:16px">
+      <div class="section-label">All topics — accuracy</div>
+      ${sorted.map(id=>{
+        const acc=getAcc(id)||0;
+        const p=S.perf[id];
+        const barCol=acc>=75?'var(--green)':acc>=50?'#f59e0b':'var(--red)';
+        return `<div class="sw-item">
+          <span class="sw-label" title="${topicName(id)}">${topicName(id)}</span>
+          <div class="sw-bar-wrap"><div class="sw-bar" style="width:${acc}%;background:${barCol}"></div></div>
+          <span class="sw-pct">${acc}%</span>
+          <span class="sw-qs">${p.total}q</span>
+        </div>`;
+      }).join('')}
+
+      ${ids.filter(id=>S.perf[id].total===0).length>0?`
+      <div style="margin-top:10px;font-size:.78rem;color:var(--muted)">${ids.filter(id=>S.perf[id].total===0).length} topic${ids.filter(id=>S.perf[id].total===0).length>1?'s':''} not yet tried.</div>`:''}
+    </div>
+
+  `;
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function navTo(tab){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+tab).classList.add('active');
+  if(tab==='home'){updateHome();show('s-home');}
+  else if(tab==='progress'){renderProgress();show('s-progress');}
+}
+function goHome(){clearInterval(tick);updateHome();show('s-home');navTo('home');}
+
+// ══════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════
+function confetti(){
+  const cols=['#1a56db','#15803d','#b45309','#be185d','#7c3aed','#0d766e'];
+  for(let i=0;i<55;i++)setTimeout(()=>{
+    const el=document.createElement('div');el.className='cp';
+    el.style.cssText=`left:${rnd(0,100)}%;top:-8px;background:${pick(cols)};--r:${rnd(300,700)}deg;--d:${1.4+Math.random()}s;animation-delay:${Math.random()*.45}s`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),3000);
+  },i*22);
+}
+
+// INIT
+updateHome();
+</script>
+</body>
+</html>
